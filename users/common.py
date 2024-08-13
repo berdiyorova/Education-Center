@@ -1,6 +1,7 @@
 import hashlib
 import uuid
 from datetime import datetime, timedelta
+from decimal import Decimal
 from enum import Enum
 from Exam.logs import log_decorator
 from Exam.file_manager import user_manager
@@ -25,7 +26,7 @@ class User:
         self.password = password
         self.gender = gender
         self.age = age
-        self.balance = 0
+        self.balance = Decimal(0)
         self.is_login = False
         self.is_active = False
 
@@ -71,7 +72,7 @@ class Group:
         self.max_student = max_student
         self.start_time = datetime.now()
         self.duration = duration
-        self.price = price
+        self.price = Decimal(price)
         self.status = True
         self.students = []
 
@@ -111,3 +112,20 @@ def add_user(user_type):
 
         user_manager.add_data(user.formatting_data())
         return user
+
+
+def filter_users(key, value):    # generator was used
+    users = user_manager.read_data()
+    for user in users:
+        if user[key] == value:
+            yield user
+
+def get_user(users, id):
+    for user in users:
+        if user['id'] == id:
+            return user
+
+
+def delete_user(users, id):
+    user = get_user(users, id)
+    return user_manager.delete_data(user)

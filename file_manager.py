@@ -48,16 +48,16 @@ class JsonManager:
             return True
         return False
 
-    def delete_data(self, identifier, key):
+    def delete_data(self, obj):
         all_data = self.read_data()
-        updated_data = []
+        length = len(all_data)
 
         for item in all_data:
-            if item[key] != identifier:
-                updated_data.append(item)
+            if item == obj:
+                all_data.remove(obj)
 
-        self.write_data(updated_data)
-        return len(updated_data) < len(all_data)
+        self.write_data(all_data)
+        return len(all_data) < length
 
 
 user_manager = JsonManager("../data/users.json")
