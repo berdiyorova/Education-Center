@@ -120,6 +120,29 @@ def filter_users(key, value):    # generator was used
         if user[key] == value:
             yield user
 
+def list_users(key, value):
+    users = list(filter_users(key, value))
+    users1 = []
+    count = 1
+    for user in users:
+        users1.append({
+            'index': count,
+            'user': {
+                'id': user['id'],
+                'full_name': user['full_name'],
+                'username': user['username'],
+                'user_type': user['user_type']
+            }
+        })
+        count += 1
+    return users1
+
+def print_users(key, value):
+    users = list_users(key, value)
+    for user in users:
+        print(f"{user['index']}. {user['user']}")
+
+
 def get_user(users, id):
     for user in users:
         if user['id'] == id:

@@ -1,4 +1,4 @@
-from common import add_user, UserTypes
+from common import add_user, UserTypes, filter_users, get_user
 
 
 def show_menu(user_type):
