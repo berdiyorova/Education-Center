@@ -3,6 +3,8 @@ import random
 from datetime import datetime, timedelta
 from enum import Enum
 
+from Exam.logs import log_decorator
+from Exam.file_manager import user_manager
 
 
 class UserTypes(str, Enum):
@@ -13,12 +15,13 @@ class UserTypes(str, Enum):
 
 
 class User:
-    def __init__(self, first_name, last_name, user_type, phone, username=None, gender=None, age=None, email=None):
+    def __init__(self, first_name, last_name, user_type, phone, password, username=None, gender=None, age=None, email=None):
         self.id = random.randint(1000, 9999)
         self.first_name = first_name
         self.last_name = last_name
         self.user_type = user_type
         self.username = username
+        self.password = password
         self.gender = gender
         self.age = age
         self.email = email
@@ -35,17 +38,11 @@ class User:
     def login(self):
         return f"ID{self.id}"
 
-    @property
-    def password(self):
-        return f"{random.randint(10000, 99999)}"
+    def check_password(self, confirm_password):
+        return self.password == confirm_password
 
-    @staticmethod
-    def is_only_letters(s):
-        return s.isalpha()
-
-    @staticmethod
-    def hash_password(password):
-        return hashlib.sha256(password.encode()).hexdigest()
+    def hash_password(self):
+        self.password = hashlib.sha256(self.password.encode()).hexdigest()
 
     def formatting_data(self):
         if self.user_type == 'admin':
@@ -93,7 +90,6 @@ class User:
 
 
 
-
 class Group:
     def __init__(self, name, description, teacher, max_student, duration, price):
         self.name = name
@@ -113,3 +109,28 @@ class Group:
     def change_status(self):
         if datetime.now() == self.end_time:
             self.status = False
+
+
+@log_decorator
+def add_admin():
+    first_name: str = input("Enter first name: ").title().strip()
+    last_name: str = input("Enter last name: ").title().strip()
+    username: str = input("Enter username: ").lower().strip()
+    phone: str = input("Enter phone number: ").strip()
+    password: str = input("Enter password: ")
+    confirm_password: str = input("Confirm password: ")
+
+    admin = User(
+        first_name=first_name,
+        last_name=last_name,
+        username=username,
+        phone=phone,
+        password=password,
+        user_type=UserTypes.ADMIN.value
+    )
+    if not admin.check_password(confirm_password):
+        add_admin()
+
+    admin.hash_password()
+    user_manager.add_data(admin)
+    return admin
