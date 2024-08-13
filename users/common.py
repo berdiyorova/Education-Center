@@ -3,8 +3,8 @@ import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
-from Exam.logs import log_decorator
-from Exam.file_manager import user_manager
+from logs import log_decorator
+from file_manager import user_manager
 
 
 class UserTypes(Enum):
@@ -117,38 +117,25 @@ def add_user(user_type):
 def filter_users(key, value):    # generator was used
     users = user_manager.read_data()
     for user in users:
-        if user[key] == value:
+        if user.get(key) == value:  # Use get to avoid KeyError
             yield user
 
-def list_users(key, value):
-    users = list(filter_users(key, value))
-    users1 = []
-    count = 1
-    for user in users:
-        users1.append({
-            'index': count,
-            'user': {
-                'id': user['id'],
-                'full_name': user['full_name'],
-                'username': user['username'],
-                'user_type': user['user_type']
-            }
-        })
-        count += 1
-    return users1
+def ordered_users(users):
+    return [{'index': str(index + 1), 'user': user} for index, user in enumerate(users)]
 
-def print_users(key, value):
-    users = list_users(key, value)
-    for user in users:
+def print_users(users):
+    users1 = ordered_users(users)
+    for user in users1:
         print(f"{user['index']}. {user['user']}")
-
 
 def get_user(users, id):
     for user in users:
-        if user['id'] == id:
+        if user.get('id') == id:
             return user
-
+    return None
 
 def delete_user(users, id):
     user = get_user(users, id)
-    return user_manager.delete_data(user)
+    if user:
+        return user_manager.delete_data(user)
+    return None

@@ -1,4 +1,4 @@
-from common import add_user, UserTypes, filter_users, get_user
+from common import add_user, UserTypes, filter_users, ordered_users, get_user, print_users, delete_user
 
 
 def show_menu(user_type):
@@ -16,10 +16,11 @@ def user_settings(user_type):
     choice = input("Enter your choice: ")
     if choice == "1":
         if add_user(user_type):
-            print("Successfully added new admin.")
+            print(f"Successfully added new {user_type}.")
             user_settings(user_type)
     elif choice == "2":
-        pass
+        if delete('user_type', user_type):
+            print(f"{user_type} successfully deleted.")
     elif choice == "3":
         pass
     elif choice == "4":
@@ -54,4 +55,12 @@ def super_admin_menu():
         super_admin_menu()
 
 
-super_admin_menu()
+def delete(key, value):
+    users1 = ordered_users(filter_users(key, value))
+    print_users(users1)
+    choice = input("\nPlease, select a user:  ")
+    for obj in users1:
+        if obj.get('index') == choice:
+            return delete_user(filter_users(key, value), obj.get('user').get('id'))
+
+

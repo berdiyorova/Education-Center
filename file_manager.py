@@ -54,7 +54,8 @@ class JsonManager:
 
         for item in all_data:
             if item == obj:
-                all_data.remove(obj)
+                all_data.remove(item)
+                break
 
         self.write_data(all_data)
         return len(all_data) < length
