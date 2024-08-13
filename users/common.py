@@ -1,5 +1,6 @@
 import hashlib
 import random
+from datetime import datetime, timedelta
 from enum import Enum
 
 
@@ -91,3 +92,25 @@ class User:
             'is_active': self.is_active
         }
 
+
+
+
+class Group:
+    def __init__(self, name, description, teacher, max_student, duration, price):
+        self.name = name
+        self.description = description
+        self.teacher = teacher
+        self.max_student = max_student
+        self.start_time = datetime.now()
+        self.duration = duration
+        self.price = price
+        self.status = True
+        self.students = []
+
+    @property
+    def end_time(self):
+        return self.start_time + timedelta(days=30*self.duration)
+
+    def change_status(self):
+        if datetime.now() == self.end_time:
+            self.status = False
