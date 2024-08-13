@@ -13,7 +13,6 @@ class UserTypes(str, Enum):
 
 
 class User:
-
     def __init__(self, first_name, last_name, user_type, phone, username=None, gender=None, age=None, email=None):
         self.id = random.randint(1000, 9999)
         self.first_name = first_name
