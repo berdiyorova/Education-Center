@@ -1,13 +1,12 @@
 import hashlib
-import random
+import uuid
 from datetime import datetime, timedelta
 from enum import Enum
-
 from Exam.logs import log_decorator
 from Exam.file_manager import user_manager
 
 
-class UserTypes(str, Enum):
+class UserTypes(Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN = "admin"
     STUDENT = "student"
@@ -16,16 +15,16 @@ class UserTypes(str, Enum):
 
 class User:
     def __init__(self, first_name, last_name, user_type, phone, password, username=None, gender=None, age=None, email=None):
-        self.id = random.randint(1000, 9999)
+        self.id = str(uuid.uuid4())
         self.first_name = first_name
         self.last_name = last_name
         self.user_type = user_type
         self.username = username
+        self.phone = phone
+        self.email = email
         self.password = password
         self.gender = gender
         self.age = age
-        self.email = email
-        self.phone = phone
         self.balance = 0
         self.is_login = False
         self.is_active = False
@@ -36,24 +35,17 @@ class User:
 
     @property
     def login(self):
-        return f"ID{self.id}"
+        return f"ID-{self.id[:5]}"
+
+    def hashing_password(self, password):
+        self.password = hashlib.sha256(self.password.encode()).hexdigest()
 
     def check_password(self, confirm_password):
         return self.password == confirm_password
 
-    def hash_password(self):
-        self.password = hashlib.sha256(self.password.encode()).hexdigest()
-
     def formatting_data(self):
-        if self.user_type == 'admin':
-            self.admin_data()
-        elif self.user_type == 'teacher':
-            self.teacher_data()
-        else:
-            self.student_data()
-
-    def admin_data(self):
-        return {
+        user_data = {
+            'id': self.id,
             'full_name': self.full_name,
             'username': self.username,
             'phone': self.phone,
@@ -61,33 +53,14 @@ class User:
             'password': self.password,
             'is_login': self.is_login
         }
-
-    def teacher_data(self):
-        return {
-            'id': self.id,
-            'full_name': self.full_name,
-            'email': self.email,
-            'phone': self.phone,
-            'user_type': self.user_type,
-            'login': self.login,
-            'password': self.password,
-            'is_login': self.is_login
-        }
-
-    def student_data(self):
-        return {
-            'id': self.id,
-            'full_name': self.full_name,
-            'email': self.email,
-            'phone': self.phone,
-            'user_type': self.user_type,
-            'login': self.login,
-            'password': self.password,
-            'balance': self.balance,
-            'is_login': self.is_login,
-            'is_active': self.is_active
-        }
-
+        if self.user_type in {UserTypes.TEACHER.value, UserTypes.STUDENT.value}:
+            user_data.update({
+                'email': self.email,
+                'login': self.login,
+                'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
+                'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None
+            })
+        return user_data
 
 
 class Group:
@@ -104,33 +77,37 @@ class Group:
 
     @property
     def end_time(self):
-        return self.start_time + timedelta(days=30*self.duration)
+        return self.start_time + timedelta(days=self.duration * 30)
 
     def change_status(self):
-        if datetime.now() == self.end_time:
+        if datetime.now() >= self.end_time:
             self.status = False
 
 
 @log_decorator
-def add_admin():
-    first_name: str = input("Enter first name: ").title().strip()
-    last_name: str = input("Enter last name: ").title().strip()
-    username: str = input("Enter username: ").lower().strip()
-    phone: str = input("Enter phone number: ").strip()
-    password: str = input("Enter password: ")
-    confirm_password: str = input("Confirm password: ")
+def add_user(user_type):
+    while True:
+        first_name = input("Enter first name: ").title().strip()
+        last_name = input("Enter last name: ").title().strip()
+        username = input("Enter username: ").lower().strip()
+        email = input("Enter email: ").lower().strip()
+        phone = input("Enter phone number: ").strip()
+        password = input("Enter password: ")
+        confirm_password = input("Confirm password: ")
 
-    admin = User(
-        first_name=first_name,
-        last_name=last_name,
-        username=username,
-        phone=phone,
-        password=password,
-        user_type=UserTypes.ADMIN.value
-    )
-    if not admin.check_password(confirm_password):
-        add_admin()
+        user = User(
+            first_name=first_name,
+            last_name=last_name,
+            username=username,
+            email=email,
+            phone=phone,
+            password=password,
+            user_type=user_type
+        )
 
-    admin.hash_password()
-    user_manager.add_data(admin)
-    return admin
+        if not user.check_password(confirm_password):
+            print("\nPasswords do not match. Please try again.")
+            continue
+
+        user_manager.add_data(user.formatting_data())
+        return user
