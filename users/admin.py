@@ -1,4 +1,5 @@
 from file_manager import group_manager
+from users.common import filter_users, UserTypes, print_users
 
 
 def show_groups():
@@ -19,3 +20,24 @@ def delete_group():
     groups = show_groups()
     choice = int(input("\nPlease, select the group you want to delete:  "))
     return group_manager.delete_data(groups[choice - 1])
+
+
+def add_student_to_group():
+    groups = show_groups()
+    index_gr = int(input("Select the group:  "))
+    while True:
+        students = show_students()
+        index_st = int(input("Select the student (input 0 to exit):  "))
+        if index_st == 0:
+            break
+        else:
+            groups[index_gr - 1]['students'].append(students[index_st - 1])
+
+    group_manager.write_data(groups)
+
+
+def show_students():
+    students = list(filter_users('user_type', UserTypes.STUDENT.value))
+    print_users(students)
+
+    return students

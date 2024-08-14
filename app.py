@@ -1,6 +1,6 @@
 from file_manager import user_manager
 from logs import log_decorator
-from users.admin import show_groups, delete_group
+from users.admin import show_groups, delete_group, add_student_to_group
 from users.common import UserTypes, add_user, print_users, create_group
 from users.superadmin import email_to_users, send_message, show_menu, delete, update, show_users, search
 
@@ -180,7 +180,7 @@ def group_settings(id):
         if delete_group():
             print("Group successfully deleted")
     elif choice == "4":
-        pass
+        add_student_to_group()
     elif choice == "5":
         admin_menu(id)
     else:
