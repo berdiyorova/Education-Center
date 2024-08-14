@@ -61,5 +61,5 @@ class JsonManager:
         return len(all_data) < length
 
 
-user_manager = JsonManager("../data/users.json")
-group_manager = JsonManager("../data/groups.json")
+user_manager = JsonManager("./data/users.json")
+group_manager = JsonManager("./data/groups.json")

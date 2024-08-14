@@ -2,7 +2,7 @@ import smtplib
 import threading
 from contextlib import contextmanager
 
-from common import filter_users, print_users, delete_user, update_user, search_user
+from users.common import filter_users, print_users, delete_user, update_user, search_user
 
 
 def show_menu(user_type):

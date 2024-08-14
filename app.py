@@ -52,14 +52,14 @@ def show_auth_menu():
     user_input = input("Choose an option: ").strip()
 
     if user_input == "1":
-        login = input("Enter your login: ").strip()
-        password = input("Enter your password: ").strip()
+        login = input("Enter your login: ")
+        password = input("Enter your password: ")
         if check_superadmin(login=login, password=password):
             print("You have successfully logged in.")
             super_admin_menu()
         elif check_user(login=login, password=password):
             print("You have successfully logged in.")
-            user_type, id = check_user(login, password)
+            user_type, id = log_in(login, password)
             if user_type == UserTypes.ADMIN.value:
                 admin_menu(id)
         else:

@@ -23,7 +23,7 @@ class User:
         self.username = username
         self.phone = phone
         self.email = email
-        self.password = f"pass-{random.randint(100, 999)}"
+        self.password = f"pass{random.randint(100, 999)}"
         self.gender = gender
         self.age = age
         self.balance = Decimal(0)
@@ -32,7 +32,7 @@ class User:
 
     @property
     def login(self):
-        return f"ID-{self.id[:5]}"
+        return f"ID{self.id[:5]}"
 
     def hashing_password(self, password):
         self.password = hashlib.sha256(self.password.encode()).hexdigest()
@@ -88,9 +88,9 @@ class Group:
             'teacher': self.teacher,
             'max_student': self.max_student,
             'duration': self.duration,
-            'price': self.price,
-            'start_time': self.start_time,
-            'end_time': self.end_time,
+            'price': str(self.price),
+            'start_time': str(self.start_time),
+            'end_time': str(self.end_time),
             'status': self.status,
             'students': self.students
         }
@@ -139,7 +139,7 @@ def validate_email():
 def filter_users(key, value):    # generator was used
     users = user_manager.read_data()
     for user in users:
-        if user.get(key) == value:  # Use get to avoid KeyError
+        if user.get(key) == value:
             yield user
 
 
