@@ -1,4 +1,5 @@
 import hashlib
+import random
 import uuid
 from datetime import datetime, timedelta
 from decimal import Decimal
@@ -15,14 +16,14 @@ class UserTypes(Enum):
 
 
 class User:
-    def __init__(self, full_name, user_type, phone, password, username=None, gender=None, age=None, email=None):
+    def __init__(self, full_name, user_type, phone, username=None, gender=None, age=None, email=None):
         self.id = str(uuid.uuid4())
         self.full_name = full_name
         self.user_type = user_type
         self.username = username
         self.phone = phone
         self.email = email
-        self.password = password
+        self.password = f"pass-{random.randint(100, 999)}"
         self.gender = gender
         self.age = age
         self.balance = Decimal(0)
@@ -36,15 +37,13 @@ class User:
     def hashing_password(self, password):
         self.password = hashlib.sha256(self.password.encode()).hexdigest()
 
-    def check_password(self, confirm_password):
-        return self.password == confirm_password
-
     def formatting_data(self):
         user_data = {
             'id': self.id,
             'full_name': self.full_name,
             'username': self.username,
             'phone': self.phone,
+            'gender': self.gender,
             'user_type': self.user_type,
             'login': self.login,
             'password': self.password,
@@ -54,7 +53,6 @@ class User:
             user_data.update({
                 'age': self.age,
                 'email': self.email,
-                'gender': self.gender if self.user_type == UserTypes.STUDENT.value else None,
                 'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
                 'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None,
             })
@@ -98,6 +96,8 @@ class Group:
         }
 
 
+
+
 @log_decorator
 def add_user(user_type):
     while True:
@@ -111,8 +111,8 @@ def add_user(user_type):
             2. Female
             Enter choice:  
             """)
-        password = input("Enter password: ")
-        confirm_password = input("Confirm password: ")
+        else:
+            gender = None
 
         user = User(
             full_name=full_name,
@@ -120,13 +120,8 @@ def add_user(user_type):
             email=email,
             phone=phone,
             gender=gender,
-            password=password,
             user_type=user_type
         )
-
-        if not user.check_password(confirm_password):
-            print("\nPasswords do not match. Please try again.")
-            continue
 
         user_manager.add_data(user.formatting_data())
         return user
@@ -174,30 +169,18 @@ def update_user(users, id):
 
 
 def new_data():
-    attributes = ["full_name", "username", "email", "phone", "password"]
+    attributes = ["full_name", "username", "email", "phone", 'balance']
 
     print_users(attributes)
     choice = int(input("Select the attribute you want to change: "))
     selected_attr = attributes[choice - 1]
 
-    if selected_attr == 'password':
-        new_value = password_change()
-    else:
-        new_value = input(f"Enter new value for {selected_attr}  ")
+    new_value = input(f"Enter new value for {selected_attr}:  ")
 
     return {
         selected_attr: new_value
     }
 
-def password_change():
-    while True:
-        password = input(f"Enter new value for password  ")
-        confirm = input("Enter again the password  ")
-        if password != confirm:
-            print("\nPasswords do not match. Please try again.")
-            continue
-
-        return password
 
 def search_user(users, value):
     for user in users:
@@ -208,7 +191,7 @@ def search_user(users, value):
 
 
 @log_decorator
-def create_group(user_type):
+def create_group():
     while True:
         name = input("Enter group name: ").title().strip()
         description = input("Enter description (What is taught in this group): ")

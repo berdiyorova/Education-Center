@@ -2,9 +2,7 @@ import smtplib
 import threading
 from contextlib import contextmanager
 
-from common import add_user, UserTypes, filter_users, print_users, delete_user, update_user, search_user
-from file_manager import user_manager
-from logs import log_decorator
+from common import filter_users, print_users, delete_user, update_user, search_user
 
 
 def show_menu(user_type):
@@ -16,61 +14,6 @@ def show_menu(user_type):
     5. Search {user_type}
     6. Back
     """
-
-@log_decorator
-def user_settings(user_type):
-    print(show_menu(user_type))
-    choice = input("Enter your choice: ")
-    if choice == "1":
-        if add_user(user_type):
-            print(f"Successfully added new {user_type}.")
-            user_settings(user_type)
-    elif choice == "2":
-        if delete('user_type', user_type):
-            print(f"{user_type} successfully deleted.")
-            user_settings(user_type)
-    elif choice == "3":
-        if update('user_type', user_type):
-            print(f"{user_type} successfully updated.")
-            user_settings(user_type)
-    elif choice == "4":
-        show_users('user_type', user_type)
-        user_settings(user_type)
-    elif choice == "5":
-        users = search('user_type', user_type)
-        if users:
-            print_users(users)
-        else:
-            print("User not found.")
-        user_settings(user_type)
-    elif choice == "6":
-        super_admin_menu()
-    else:
-        print("Wrong choice!")
-        user_settings(user_type)
-
-
-def super_admin_menu():
-    print("""
-        1. Admins
-        2. Teachers
-        3. Send message
-        4. Logout
-        """)
-    choice = input("Enter your choice:  ")
-    if choice == "1":
-        user_settings(UserTypes.ADMIN.value)
-    elif choice == "2":
-        user_settings(UserTypes.TEACHER.value)
-    elif choice == "3":
-        users = email_to_users()
-        send_message(users)
-        super_admin_menu()
-    elif choice == "4":
-        return None
-    else:
-        print("Wrong choice !")
-        super_admin_menu()
 
 
 def delete(key, value):
@@ -121,9 +64,9 @@ def email_to_users():
         if choice == '1':
             return users
         if choice == '2':
-            return list(filter_users('gender', 'male'))
+            return list(search_user(users, 'male'))
         elif choice == '3':
-            return list(filter_users('gender', 'female'))
+            return list(search_user(users, 'female'))
         else:
             print("Invalid input! Try again.")
 
@@ -151,8 +94,3 @@ smtp_server = 'smtp.gmail.com'
 smtp_port = 587
 smtp_sender = 'rano.baxromovna@gmail.com'
 smtp_password = 'iwnd wsls azqg bphk'
-
-
-
-
-super_admin_menu()
