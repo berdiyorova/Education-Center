@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from logs import log_decorator
-from file_manager import user_manager
+from file_manager import user_manager, group_manager
 
 
 class UserTypes(Enum):
@@ -63,6 +63,7 @@ class User:
 
 class Group:
     def __init__(self, name, description, teacher, max_student, duration, price):
+        self.id = str(uuid.uuid4())
         self.name = name
         self.description = description
         self.teacher = teacher
@@ -80,6 +81,21 @@ class Group:
     def change_status(self):
         if datetime.now() >= self.end_time:
             self.status = False
+
+    def formatting_data(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'teacher': self.teacher,
+            'max_student': self.max_student,
+            'duration': self.duration,
+            'price': self.price,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'status': self.status,
+            'students': self.students
+        }
 
 
 @log_decorator
@@ -187,3 +203,35 @@ def search_user(users, value):
     for user in users:
         if user['full_name'] == value or user['username'] == value or user['phone'] == value or user['gender'] == value:
             yield user
+
+
+
+
+@log_decorator
+def create_group(user_type):
+    while True:
+        name = input("Enter group name: ").title().strip()
+        description = input("Enter description (What is taught in this group): ")
+        teacher = choose_teacher()
+        max_student = int(input("Enter the maximum number of students:  "))
+        duration = int(input("How long is the course (months):  "))
+        price = float(input("How much is the course price (monthly):  "))
+
+        group = Group(
+            name=name,
+            description=description,
+            teacher=teacher,
+            max_student=max_student,
+            duration=duration,
+            price=price
+        )
+
+        group_manager.add_data(group.formatting_data())
+        return group
+
+
+def choose_teacher():
+    teachers = list(filter_users('user_type', UserTypes.TEACHER.value))
+    print_users(teachers)
+    choice = int(input("\nPlease, select the teacher:  "))
+    return teachers[choice - 1]
