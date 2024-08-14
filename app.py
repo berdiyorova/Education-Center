@@ -1,6 +1,7 @@
-from file_manager import user_manager
+from file_manager import user_manager, group_manager
 from logs import log_decorator
-from users.admin import show_groups, delete_group, add_student_to_group, search_student, fill_balance
+from users.admin import show_groups, delete_group, add_student_to_group, search_student, fill_balance, \
+    change_students_status
 from users.common import UserTypes, add_user, print_users, create_group
 from users.superadmin import email_to_users, send_message, show_menu, delete, update, show_users, search
 
@@ -195,6 +196,7 @@ def student_settings():
     3. Delete students
     4. Search student
     5. Fill balance
+    6. Change students statuses
     """)
     choice = input("Enter your choice: ")
     user_type = UserTypes.STUDENT.value
@@ -218,6 +220,10 @@ def student_settings():
         if fill_balance(text):
             print("Balance was successfully replenished.")
         student_settings()
+    elif choice == "6":
+        groups = group_manager.read_data()
+        for group in groups:
+            change_students_status(group)
     else:
         print("Wrong choice!")
         student_settings()

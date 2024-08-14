@@ -58,13 +58,22 @@ def fill_balance(text):
     print(student)
     amount = input("Enter amount you want to add balance:  ")
     new_balance = str(Decimal(float(student['balance'])) + Decimal(float(amount)))
-    return user_manager.update_data(student, {"balance": new_balance})
+    if user_manager.update_data(student, {"balance": new_balance}):
+        return user_manager.update_data(student, {"is_active": True})
+    return None
 
 
 def check_balance(balance, group):
     date_format = "%Y-%m-%d %H:%M:%S.%f"
     diff = datetime.datetime.now() - datetime.strptime(group['start_time'], date_format)
-    month = diff.days//30
+    month = diff.days//30 + 1
     return balance >= float(group['price']) * month
+
+def change_students_status(group):
+    for student in group['students']:
+        value = False
+        if check_balance(student['balance'], group):
+            value = True
+        user_manager.update_data(student, {'is_active': value})
 
 
