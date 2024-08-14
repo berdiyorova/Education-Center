@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 
 from file_manager import group_manager, user_manager
@@ -58,3 +59,12 @@ def fill_balance(text):
     amount = input("Enter amount you want to add balance:  ")
     new_balance = str(Decimal(float(student['balance'])) + Decimal(float(amount)))
     return user_manager.update_data(student, {"balance": new_balance})
+
+
+def check_balance(balance, group):
+    date_format = "%Y-%m-%d %H:%M:%S.%f"
+    diff = datetime.datetime.now() - datetime.strptime(group['start_time'], date_format)
+    month = diff.days//30
+    return balance >= float(group['price']) * month
+
+
