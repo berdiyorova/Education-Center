@@ -1,6 +1,6 @@
 from file_manager import user_manager
 from logs import log_decorator
-from users.admin import show_groups, delete_group, add_student_to_group
+from users.admin import show_groups, delete_group, add_student_to_group, search_student, fill_balance
 from users.common import UserTypes, add_user, print_users, create_group
 from users.superadmin import email_to_users, send_message, show_menu, delete, update, show_users, search
 
@@ -151,7 +151,7 @@ def admin_menu(id):
     if choice == "1":
         group_settings(id)
     elif choice == "2":
-        user_settings(UserTypes.STUDENT.value)
+        student_settings()
     elif choice == "3":
         logout(id)
         print("You have successfully logged out")
@@ -186,6 +186,41 @@ def group_settings(id):
     else:
         print("Wrong choice!")
         group_settings(id)
+
+
+def student_settings():
+    print("""
+    1. Create students
+    2. Show students
+    3. Delete students
+    4. Search student
+    5. Fill balance
+    """)
+    choice = input("Enter your choice: ")
+    user_type = UserTypes.STUDENT.value
+    if choice == "1":
+        if add_user(user_type):
+            print(f"Successfully added new {user_type}.")
+            student_settings()
+    elif choice == "2":
+        show_users('user_type', user_type)
+        student_settings()
+    elif choice == "3":
+        if delete('user_type', user_type):
+            print(f"{user_type} successfully deleted.")
+            student_settings()
+    elif choice == "4":
+        text = input("Enter full_name or login:  ")
+        print(search_student(text))
+        student_settings()
+    elif choice == "5":
+        text = input("Enter full_name or login:  ")
+        if fill_balance(text):
+            print("Balance was successfully replenished.")
+        student_settings()
+    else:
+        print("Wrong choice!")
+        student_settings()
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
-from file_manager import group_manager
+from decimal import Decimal
+
+from file_manager import group_manager, user_manager
 from users.common import filter_users, UserTypes, print_users
 
 
@@ -41,3 +43,18 @@ def show_students():
     print_users(students)
 
     return students
+
+def search_student(name_or_login):
+    student = list(filter_users('full_name', name_or_login))
+    if not student:
+        student = list(filter_users('login', name_or_login))
+
+    return student[0]
+
+
+def fill_balance(text):
+    student = search_student(text)
+    print(student)
+    amount = input("Enter amount you want to add balance:  ")
+    new_balance = str(Decimal(float(student['balance'])) + Decimal(float(amount)))
+    return user_manager.update_data(student, {"balance": new_balance})

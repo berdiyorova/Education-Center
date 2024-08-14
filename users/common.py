@@ -53,7 +53,7 @@ class User:
             user_data.update({
                 'age': self.age,
                 'email': self.email,
-                'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
+                'balance': str(self.balance) if self.user_type == UserTypes.STUDENT.value else None,
                 'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None,
             })
         return user_data
@@ -106,11 +106,15 @@ def add_user(user_type):
         email = validate_email().lower()
         phone = input("Enter phone number: ").strip()
         if user_type == UserTypes.STUDENT.value:
-            gender = input("""
+            choice = input("""
             1. Male
             2. Female
             Enter choice:  
             """)
+            if choice == '1':
+                gender = 'male'
+            else:
+                gender = 'female'
         else:
             gender = None
 
@@ -169,7 +173,7 @@ def update_user(users, id):
 
 
 def new_data():
-    attributes = ["full_name", "username", "email", "phone", 'balance']
+    attributes = ["full_name", "username", "email", "phone"]
 
     print_users(attributes)
     choice = int(input("Select the attribute you want to change: "))
