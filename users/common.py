@@ -54,8 +54,9 @@ class User:
             user_data.update({
                 'age': self.age,
                 'email': self.email,
+                'gender': self.gender if self.user_type == UserTypes.STUDENT.value else None,
                 'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
-                'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None
+                'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None,
             })
         return user_data
 
@@ -88,6 +89,12 @@ def add_user(user_type):
         username = input("Enter username: ").lower().strip()
         email = validate_email().lower()
         phone = input("Enter phone number: ").strip()
+        if user_type == UserTypes.STUDENT.value:
+            gender = input("""
+            1. Male
+            2. Female
+            Enter choice:  
+            """)
         password = input("Enter password: ")
         confirm_password = input("Confirm password: ")
 
@@ -96,6 +103,7 @@ def add_user(user_type):
             username=username,
             email=email,
             phone=phone,
+            gender=gender,
             password=password,
             user_type=user_type
         )
@@ -177,11 +185,5 @@ def password_change():
 
 def search_user(users, value):
     for user in users:
-        if user['full_name'] == value:
+        if user['full_name'] == value or user['username'] == value or user['phone'] == value or user['gender'] == value:
             yield user
-        elif user['username'] == value:
-            yield user
-        elif user['phone'] == value:
-            yield user
-        else:
-            continue

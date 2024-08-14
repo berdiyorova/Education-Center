@@ -44,7 +44,7 @@ def show_auth_menu():
     elif user_input == "2":
         answer = input("Would you like to quit? (y/n): ").lower()
         if answer == "y":
-            print("You quit the program. See you!")
+            print("You quit the program.")
         else:
             return show_auth_menu()
     else:
