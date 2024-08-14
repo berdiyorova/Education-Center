@@ -15,10 +15,9 @@ class UserTypes(Enum):
 
 
 class User:
-    def __init__(self, first_name, last_name, user_type, phone, password, username=None, gender=None, age=None, email=None):
+    def __init__(self, full_name, user_type, phone, password, username=None, gender=None, age=None, email=None):
         self.id = str(uuid.uuid4())
-        self.first_name = first_name
-        self.last_name = last_name
+        self.full_name = full_name
         self.user_type = user_type
         self.username = username
         self.phone = phone
@@ -29,10 +28,6 @@ class User:
         self.balance = Decimal(0)
         self.is_login = False
         self.is_active = False
-
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
 
     @property
     def login(self):
@@ -56,6 +51,7 @@ class User:
         }
         if self.user_type in {UserTypes.TEACHER.value, UserTypes.STUDENT.value}:
             user_data.update({
+                'age': self.age,
                 'email': self.email,
                 'login': self.login,
                 'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
@@ -88,8 +84,7 @@ class Group:
 @log_decorator
 def add_user(user_type):
     while True:
-        first_name = input("Enter first name: ").title().strip()
-        last_name = input("Enter last name: ").title().strip()
+        full_name = input("Enter full name: ").title().strip()
         username = input("Enter username: ").lower().strip()
         email = input("Enter email: ").lower().strip()
         phone = input("Enter phone number: ").strip()
@@ -97,8 +92,7 @@ def add_user(user_type):
         confirm_password = input("Confirm password: ")
 
         user = User(
-            first_name=first_name,
-            last_name=last_name,
+            full_name=full_name,
             username=username,
             email=email,
             phone=phone,
@@ -120,13 +114,11 @@ def filter_users(key, value):    # generator was used
         if user.get(key) == value:  # Use get to avoid KeyError
             yield user
 
-def ordered_users(users):
-    return [{'index': str(index + 1), 'user': user} for index, user in enumerate(users)]
 
 def print_users(users):
-    users1 = ordered_users(users)
-    for user in users1:
-        print(f"{user['index']}. {user['user']}")
+    for index, user in enumerate(users):
+        print(f"{index + 1}. {user}")
+
 
 def get_user(users, id):
     for user in users:
@@ -139,3 +131,48 @@ def delete_user(users, id):
     if user:
         return user_manager.delete_data(user)
     return None
+
+def update_user(users, id):
+    user = get_user(users, id)
+    if user:
+        new = new_data()
+        return user_manager.update_data(user, new)
+    return None
+
+
+def new_data():
+    attributes = ["full_name", "username", "email", "phone", "password"]
+
+    print_users(attributes)
+    choice = int(input("Select the attribute you want to change: "))
+    selected_attr = attributes[choice - 1]
+
+    if selected_attr == 'password':
+        new_value = password_change()
+    else:
+        new_value = input(f"Enter new value for {selected_attr}  ")
+
+    return {
+        selected_attr: new_value
+    }
+
+def password_change():
+    while True:
+        password = input(f"Enter new value for password  ")
+        confirm = input("Enter again the password  ")
+        if password != confirm:
+            print("\nPasswords do not match. Please try again.")
+            continue
+
+        return password
+
+def search_user(users, value):
+    for user in users:
+        if user['full_name'] == value:
+            yield user
+        elif user['username'] == value:
+            yield user
+        elif user['phone'] == value:
+            yield user
+        else:
+            continue

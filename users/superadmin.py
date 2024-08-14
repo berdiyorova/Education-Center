@@ -1,4 +1,4 @@
-from common import add_user, UserTypes, filter_users, ordered_users, get_user, print_users, delete_user
+from common import add_user, UserTypes, filter_users, print_users, delete_user, update_user, search_user
 
 
 def show_menu(user_type):
@@ -21,12 +21,21 @@ def user_settings(user_type):
     elif choice == "2":
         if delete('user_type', user_type):
             print(f"{user_type} successfully deleted.")
+            user_settings(user_type)
     elif choice == "3":
-        pass
+        if update('user_type', user_type):
+            print(f"{user_type} successfully updated.")
+            user_settings(user_type)
     elif choice == "4":
-        pass
+        show_users('user_type', user_type)
+        user_settings(user_type)
     elif choice == "5":
-        pass
+        users = search('user_type', user_type)
+        if users:
+            print_users(users)
+        else:
+            print("User not found.")
+        user_settings(user_type)
     elif choice == "6":
         super_admin_menu()
     else:
@@ -56,11 +65,29 @@ def super_admin_menu():
 
 
 def delete(key, value):
-    users1 = ordered_users(filter_users(key, value))
-    print_users(users1)
-    choice = input("\nPlease, select a user:  ")
-    for obj in users1:
-        if obj.get('index') == choice:
-            return delete_user(filter_users(key, value), obj.get('user').get('id'))
+    users = list(filter_users(key, value))
+    print_users(users)
+    choice = int(input("\nPlease, select the user you want to delete:  "))
+    return delete_user(users, users[choice - 1]['id'])
 
 
+def update(key, value):
+    users = list(filter_users(key, value))
+    print_users(users)
+    choice = int(input("\nPlease, select the user you want to edit:  "))
+    return update_user(users, users[choice - 1]['id'])
+
+
+def show_users(key, value):
+    users = list(filter_users(key, value))
+    print_users(users)
+
+
+def search(key, value):
+    users = list(filter_users(key, value))
+    text = input("Search:  ")
+    users = list(search_user(users, text))
+    return users
+
+
+super_admin_menu()
