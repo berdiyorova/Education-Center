@@ -46,6 +46,7 @@ class User:
             'username': self.username,
             'phone': self.phone,
             'user_type': self.user_type,
+            'login': self.login,
             'password': self.password,
             'is_login': self.is_login
         }
@@ -53,7 +54,6 @@ class User:
             user_data.update({
                 'age': self.age,
                 'email': self.email,
-                'login': self.login,
                 'balance': self.balance if self.user_type == UserTypes.STUDENT.value else None,
                 'is_active': self.is_active if self.user_type == UserTypes.STUDENT.value else None
             })
@@ -86,7 +86,7 @@ def add_user(user_type):
     while True:
         full_name = input("Enter full name: ").title().strip()
         username = input("Enter username: ").lower().strip()
-        email = input("Enter email: ").lower().strip()
+        email = validate_email().lower()
         phone = input("Enter phone number: ").strip()
         password = input("Enter password: ")
         confirm_password = input("Confirm password: ")
@@ -106,6 +106,15 @@ def add_user(user_type):
 
         user_manager.add_data(user.formatting_data())
         return user
+
+
+def validate_email():
+    while True:  # Validating email format
+        email = input("Enter your email: ").strip()
+        if email.endswith('@gmail.com') or email.endswith('@mail.ru'):
+            return email
+        else:
+            print("Invalid input, try again!")
 
 
 def filter_users(key, value):    # generator was used
