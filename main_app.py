@@ -1,47 +1,9 @@
-from file_manager import user_manager, group_manager
+from authentication import check_superadmin, check_user, log_in, logout
 from logs import log_decorator
-from users.admin import show_groups, delete_group, add_student_to_group, search_student, fill_balance, \
-    change_students_status
-from users.common import UserTypes, add_user, print_users, create_group
-from users.superadmin import email_to_users, send_message, show_menu, delete, update, show_users, search
-
-superadmin_login = "superadmin"
-superadmin_password = "sA0101"
-
-
-
-def check_superadmin(login, password):
-    if login == superadmin_login and password == superadmin_password:
-        return True
-    return False
-
-
-def check_user(login, password):
-    all_users = user_manager.read_data()
-    for user in all_users:
-        if user['login'] == login and user['password'] == password:
-            return True
-    return False
-
-def log_in(login, password):
-    if check_user(login, password):
-        all_users = user_manager.read_data()
-        for user in all_users:
-            if user['login'] == login and user['password'] == password:
-                user['is_login'] = True
-                user_manager.write_data(all_users)
-                return user['user_type'], user['id']
-        return None
-
-
-def logout(id):
-    all_users = user_manager.read_data()
-    for user in all_users:
-        if user['id'] == id:
-            user['is_login'] = False
-            user_manager.write_data(all_users)
-            return True
-    return False
+from users.admin import fill_balance, add_student_to_group, search_result, change_all_students_statuses
+from users.user import add_user, UserTypes
+from users.group import add_group, show_groups, delete_group
+from users.superadmin import send_message, show_menu, delete, update, show_users
 
 
 def show_auth_menu():
@@ -90,16 +52,20 @@ def super_admin_menu():
         4. Logout
         """)
     choice = input("Enter your choice:  ")
+
     if choice == "1":
         user_settings(UserTypes.ADMIN.value)
+
     elif choice == "2":
         user_settings(UserTypes.TEACHER.value)
+
     elif choice == "3":
-        users = email_to_users()
-        send_message(users)
+        send_message()
         super_admin_menu()
+
     elif choice == "4":
         show_auth_menu()
+
     else:
         print("Wrong choice !")
         super_admin_menu()
@@ -109,33 +75,34 @@ def super_admin_menu():
 def user_settings(user_type):
     print(show_menu(user_type))
     choice = input("Enter your choice: ")
+
     if choice == "1":
         if add_user(user_type):
             print(f"Successfully added new {user_type}.")
             user_settings(user_type)
+
     elif choice == "2":
         if delete('user_type', user_type):
             print(f"{user_type} successfully deleted.")
-            user_settings(user_type)
+        user_settings(user_type)
+
     elif choice == "3":
         if update('user_type', user_type):
             print(f"{user_type} successfully updated.")
-            user_settings(user_type)
+        user_settings(user_type)
+
     elif choice == "4":
         show_users('user_type', user_type)
         user_settings(user_type)
+
     elif choice == "5":
-        users = search('user_type', user_type)
-        if users:
-            print_users(users)
-        else:
-            print("User not found.")
-        user_settings(user_type)
-    elif choice == "6":
         super_admin_menu()
+
     else:
         print("Wrong choice!")
         user_settings(user_type)
+
+
 
 
 
@@ -149,14 +116,18 @@ def admin_menu(id):
         3. Logout
         """)
     choice = input("Enter your choice:  ")
+
     if choice == "1":
         group_settings(id)
+
     elif choice == "2":
-        student_settings()
+        student_settings(id)
+
     elif choice == "3":
         logout(id)
         print("You have successfully logged out")
         show_auth_menu()
+
     else:
         print("Wrong choice !")
         admin_menu(id)
@@ -172,61 +143,79 @@ def group_settings(id):
     """)
     choice = input("Enter your choice: ")
     if choice == "1":
-        if create_group():
+        if add_group():
             print(f"Successfully created new group.")
-            group_settings(id)
+        group_settings(id)
+
     elif choice == "2":
         show_groups()
+        group_settings(id)
+
     elif choice == "3":
         if delete_group():
             print("Group successfully deleted")
+        group_settings(id)
+
     elif choice == "4":
-        add_student_to_group()
+        if add_student_to_group():
+            print("Successfully added student to the group.")
+        group_settings(id)
+
     elif choice == "5":
         admin_menu(id)
+
     else:
         print("Wrong choice!")
         group_settings(id)
 
 
-def student_settings():
+def student_settings(id):
     print("""
-    1. Create students
+    1. Create student
     2. Show students
-    3. Delete students
+    3. Delete student
     4. Search student
     5. Fill balance
     6. Change students statuses
+    7. Back
     """)
     choice = input("Enter your choice: ")
     user_type = UserTypes.STUDENT.value
+
     if choice == "1":
         if add_user(user_type):
             print(f"Successfully added new {user_type}.")
-            student_settings()
+        student_settings(id)
+
     elif choice == "2":
         show_users('user_type', user_type)
-        student_settings()
+        student_settings(id)
+
     elif choice == "3":
         if delete('user_type', user_type):
             print(f"{user_type} successfully deleted.")
-            student_settings()
+        student_settings(id)
+
     elif choice == "4":
-        text = input("Enter full_name or login:  ")
-        print(search_student(text))
-        student_settings()
+        print(search_result())
+        student_settings(id)
+
     elif choice == "5":
-        text = input("Enter full_name or login:  ")
-        if fill_balance(text):
+        if fill_balance():
             print("Balance was successfully replenished.")
-        student_settings()
+        student_settings(id)
+
     elif choice == "6":
-        groups = group_manager.read_data()
-        for group in groups:
-            change_students_status(group)
+        change_all_students_statuses()
+        print("Successfully changed students' statuses.")
+        student_settings(id)
+
+    elif choice == "7":
+        admin_menu(id)
+
     else:
         print("Wrong choice!")
-        student_settings()
+        student_settings(id)
 
 
 if __name__ == '__main__':

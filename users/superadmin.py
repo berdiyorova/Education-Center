@@ -2,7 +2,7 @@ import smtplib
 import threading
 from contextlib import contextmanager
 
-from users.common import filter_users, print_users, delete_user, update_user, search_user
+from users.user import filter_users, print_enumerate, delete_user, update_user, UserTypes
 
 
 def show_menu(user_type):
@@ -11,35 +11,27 @@ def show_menu(user_type):
     2. Delete {user_type}
     3. Edit {user_type}
     4. Show {user_type}s
-    5. Search {user_type}
-    6. Back
+    5. Back
     """
 
 
 def delete(key, value):
-    users = list(filter_users(key, value))
-    print_users(users)
+    users = filter_users(key, value)
+    print_enumerate(users)
     choice = int(input("\nPlease, select the user you want to delete:  "))
-    return delete_user(users, users[choice - 1]['id'])
+    return delete_user(users[choice - 1]['id'])
 
 
 def update(key, value):
-    users = list(filter_users(key, value))
-    print_users(users)
+    users = filter_users(key, value)
+    print_enumerate(users)
     choice = int(input("\nPlease, select the user you want to edit:  "))
-    return update_user(users, users[choice - 1]['id'])
+    return update_user(users[choice - 1]['id'])
 
 
 def show_users(key, value):
-    users = list(filter_users(key, value))
-    print_users(users)
-
-
-def search(key, value):
-    users = list(filter_users(key, value))
-    text = input("Search:  ")
-    users = list(search_user(users, text))
-    return users
+    users = filter_users(key, value)
+    print_enumerate(users)
 
 
 @contextmanager
@@ -52,7 +44,7 @@ def smtp_connection():
 
 
 def email_to_users():
-    users = list(filter_users('user_type', 'student'))
+    users = filter_users('user_type', UserTypes.STUDENT.value)
     while True:
         print("""  
         1. To all  
@@ -63,15 +55,17 @@ def email_to_users():
 
         if choice == '1':
             return users
+
         if choice == '2':
-            return list(search_user(users, 'male'))
+            return [user for user in users if user['gender'] == 'male']
         elif choice == '3':
-            return list(search_user(users, 'female'))
+            return [user for user in users if user['gender'] == 'female']
         else:
             print("Invalid input! Try again.")
 
 
-def send_message(users):
+def send_message():
+    users = email_to_users()
     subject = input("Subject: ")
     message = input("Message: ")
     for user in users:
