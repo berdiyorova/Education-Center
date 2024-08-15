@@ -1,6 +1,8 @@
 from authentication import check_superadmin, check_user, log_in, logout
 from logs import log_decorator
 from users.admin import fill_balance, add_student_to_group, search_result, change_all_students_statuses
+from users.common import print_enumerate
+from users.teacher import show_my_groups
 from users.user import add_user, UserTypes
 from users.group import add_group, show_groups, delete_group
 from users.superadmin import send_message, show_menu, delete, update, show_users
@@ -25,6 +27,8 @@ def show_auth_menu():
             user_type, id = log_in(login, password)
             if user_type == UserTypes.ADMIN.value:
                 admin_menu(id)
+            elif user_type == UserTypes.TEACHER.value:
+                teacher_menu(id)
         else:
             print("System cannot detect you, please try again!")
             show_auth_menu()
@@ -42,7 +46,8 @@ def show_auth_menu():
 
 
 
-"""     SUPER ADMIN     """
+"""     SUPER ADMIN MENU     """
+
 
 def super_admin_menu():
     print("""
@@ -106,7 +111,7 @@ def user_settings(user_type):
 
 
 
-"""     ADMIN     """
+"""     ADMIN MENU     """
 
 
 def admin_menu(id):
@@ -216,6 +221,41 @@ def student_settings(id):
     else:
         print("Wrong choice!")
         student_settings(id)
+
+
+
+
+
+"""     TEACHER MENU    """
+
+
+def teacher_menu(id):
+    print("""
+    1. Show my groups
+    2. Show group students
+    3. Start lesson
+    4. Back
+    """)
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        print_enumerate(list(show_my_groups(id)))
+        teacher_menu(id)
+
+    elif choice == "2":
+        pass
+        teacher_menu(id)
+
+    elif choice == "3":
+        pass
+        teacher_menu(id)
+
+    elif choice == "4":
+        show_auth_menu()
+
+    else:
+        print("Wrong choice!")
+        teacher_menu(id)
 
 
 if __name__ == '__main__':
