@@ -3,7 +3,7 @@ from users.common import print_enumerate
 from users.group import get_group_by_id
 
 
-def show_my_groups(id):
+def teacher_groups(id):
     my_groups = []
     groups = group_manager.read_data()
     for group in groups:
