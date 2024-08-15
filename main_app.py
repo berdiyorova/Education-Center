@@ -164,6 +164,8 @@ def group_settings(id):
     elif choice == "4":
         if add_student_to_group():
             print("Successfully added student to the group.")
+        else:
+            print("Sorry, places are reserved in the group.")
         group_settings(id)
 
     elif choice == "5":

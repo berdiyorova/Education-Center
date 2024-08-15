@@ -19,6 +19,7 @@ class Group:
         self.duration = duration
         self.price = Decimal(price)
         self.status = True
+        self.lesson_status = False
         self.students = []
 
     @property
@@ -41,6 +42,7 @@ class Group:
             'start_time': str(self.start_time),
             'end_time': str(self.end_time),
             'status': self.status,
+            'lesson_status': self.lesson_status,
             'students': self.students
         }
 

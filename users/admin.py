@@ -18,13 +18,17 @@ def show_students():
 
 @log_decorator
 def add_student_to_group():
-    students = []
     group = get_group()
+    students = []
+    if check_group_students_count(group):
 
-    data = get_student_data()
-    students.append(data)
+        data = get_student_data()
+        students.append(data)
+        students += group['students']
 
-    return group_manager.update_data(group, {"students": students})
+        return group_manager.update_data(group, {"students": students})
+
+    return None
 
 
 def get_student_data():
@@ -33,6 +37,10 @@ def get_student_data():
         'id': new_student['id'],
         'name': new_student['full_name']
     }
+
+
+def check_group_students_count(group):
+    return len(group['students']) < group['max_student']
 
 
 def search_student(value):
