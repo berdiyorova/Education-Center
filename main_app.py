@@ -2,9 +2,9 @@ from authentication import check_superadmin, check_user, log_in, logout
 from logs import log_decorator
 from users.admin import fill_balance, add_student_to_group, search_result, change_all_students_statuses
 from users.common import print_enumerate
-from users.student import student_groups
+from users.student import student_groups, show_balance
 from users.teacher import show_group_students, lesson, teacher_groups
-from users.user import add_user, UserTypes
+from users.user import add_user, UserTypes, update_user
 from users.group import add_group, show_groups, delete_group
 from users.superadmin import send_message, show_menu, delete, update, show_users
 
@@ -283,25 +283,23 @@ def student_menu(id):
 
     if choice == "1":
         print_enumerate(student_groups(id))
-        teacher_menu(id)
+        student_menu(id)
 
     elif choice == "2":
-        show_group_students(id)
-        teacher_menu(id)
+        print(f"Your balance:  {show_balance(id)}")
+        student_menu(id)
 
     elif choice == "3":
-        if lesson(id):
-            print("Lesson has finished.")
-            teacher_menu(id)
-        else:
-            teacher_menu(id)
+        if update_user(id):
+            print("Successfully updated your profile.")
+        student_menu(id)
 
     elif choice == "4":
         show_auth_menu()
 
     else:
         print("Wrong choice!")
-        teacher_menu(id)
+        student_menu(id)
 
 
 if __name__ == '__main__':

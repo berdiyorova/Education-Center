@@ -179,14 +179,31 @@ def new_data():
     get new data to update user
     :return:
     """
-    attributes = ["full_name", "username", "phone"]
+    attributes = ["full_name", "username", "phone", 'password']
 
     print_enumerate(attributes)
     choice = int(input("Select the attribute you want to change: "))
     selected_attr = attributes[choice - 1]
 
-    new_value = input(f"Enter new value for {selected_attr}:  ")
+    if selected_attr == "password":
+        new_value = change_password()
+    else:
+        new_value = input(f"Enter new value for {selected_attr}:  ")
 
     return {
         selected_attr: new_value
     }
+
+
+def confirm_password(password):
+    confirm_pass = input("Confirm password:  ")
+    return password == confirm_pass
+
+
+def change_password():
+    while True:
+        new_value = input(f"Enter new value for password:  ")
+        if confirm_password(new_value):
+            return new_value
+        else:
+            print("\nPasswords do not match. Try again.\n")
