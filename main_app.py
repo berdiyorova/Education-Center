@@ -2,7 +2,7 @@ from authentication import check_superadmin, check_user, log_in, logout
 from logs import log_decorator
 from users.admin import fill_balance, add_student_to_group, search_result, change_all_students_statuses
 from users.common import print_enumerate
-from users.teacher import show_my_groups, show_group_students
+from users.teacher import show_my_groups, show_group_students, lesson
 from users.user import add_user, UserTypes
 from users.group import add_group, show_groups, delete_group
 from users.superadmin import send_message, show_menu, delete, update, show_users
@@ -249,8 +249,11 @@ def teacher_menu(id):
         teacher_menu(id)
 
     elif choice == "3":
-        pass
-        teacher_menu(id)
+        if lesson(id):
+            print("Lesson has finished.")
+            teacher_menu(id)
+        else:
+            teacher_menu(id)
 
     elif choice == "4":
         show_auth_menu()
