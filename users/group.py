@@ -98,6 +98,13 @@ def get_group():
     return groups[choice - 1]
 
 
+def get_group_by_id(id):
+    groups = group_manager.read_data()
+    for group in groups:
+        if group['id'] == id:
+            return group
+
+
 def delete_group():
     group = get_group()
     return group_manager.delete_data(group)

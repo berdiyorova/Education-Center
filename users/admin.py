@@ -20,13 +20,19 @@ def show_students():
 def add_student_to_group():
     students = []
     group = get_group()
-    new_student = search_result()
 
-    students.append(new_student["id"])
-    print(students)
-    print(group["students"])
+    data = get_student_data()
+    students.append(data)
 
     return group_manager.update_data(group, {"students": students})
+
+
+def get_student_data():
+    new_student = search_result()
+    return {
+        'id': new_student['id'],
+        'name': new_student['full_name']
+    }
 
 
 def search_student(value):
