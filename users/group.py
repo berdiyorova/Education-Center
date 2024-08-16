@@ -77,6 +77,7 @@ def add_group():
         return group
 
 
+@log_decorator
 def choose_teacher():
     teachers = filter_users('user_type', UserTypes.TEACHER.value)
     print_enumerate(teachers)
@@ -84,12 +85,14 @@ def choose_teacher():
     return teachers[choice - 1]['id']
 
 
+@log_decorator
 def show_groups():
     groups = group_manager.read_data()
     print_enumerate(groups)
     return groups
 
 
+@log_decorator
 def get_group():
     """
     choose a group
@@ -100,6 +103,7 @@ def get_group():
     return groups[choice - 1]
 
 
+@log_decorator
 def get_group_by_id(id):
     groups = group_manager.read_data()
     for group in groups:
@@ -107,6 +111,7 @@ def get_group_by_id(id):
             return group
 
 
+@log_decorator
 def delete_group():
     group = get_group()
     return group_manager.delete_data(group)

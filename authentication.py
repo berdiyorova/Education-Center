@@ -1,4 +1,5 @@
 from file_manager import user_manager
+from logs import log_decorator
 
 superadmin_login = "superadmin"
 superadmin_password = "sA0101"
@@ -18,6 +19,7 @@ def check_user(login, password):
             return True
     return False
 
+@log_decorator
 def log_in(login, password):
     if check_user(login, password):
         all_users = user_manager.read_data()
@@ -28,7 +30,7 @@ def log_in(login, password):
                 return user['user_type'], user['id']
         return None
 
-
+@log_decorator
 def logout(id):
     all_users = user_manager.read_data()
     for user in all_users:

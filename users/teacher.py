@@ -1,8 +1,10 @@
 from file_manager import group_manager
+from logs import log_decorator
 from users.common import print_enumerate
 from users.group import get_group_by_id
 
 
+@log_decorator
 def teacher_groups(id):
     my_groups = []
     groups = group_manager.read_data()
@@ -25,15 +27,16 @@ def group_data(id, group):
     return None
 
 
+@log_decorator
 def show_group_students(id):
     group = get_my_group(id)
     group = get_group_by_id(group['id'])
     print_enumerate(group['students'])
 
 
-
+@log_decorator
 def get_my_group(id):
-    my_groups = show_my_groups(id)
+    my_groups = teacher_groups(id)
     print_enumerate(my_groups)
     choice = int(input("\nPlease, select your group:  "))
     return my_groups[choice - 1]
@@ -47,6 +50,7 @@ def finish_lesson(group):
     return group_manager.update_data(group, {'lesson_status': False})
 
 
+@log_decorator
 def lesson(id):
     group1 = get_my_group(id)
     group = get_group_by_id(group1['id'])

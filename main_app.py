@@ -8,7 +8,7 @@ from users.user import add_user, UserTypes, update_user
 from users.group import add_group, show_groups, delete_group
 from users.superadmin import send_message, show_menu, delete, update, show_users
 
-
+@log_decorator
 def show_auth_menu():
     print("""
     1. Login.
@@ -51,7 +51,7 @@ def show_auth_menu():
 
 """     SUPER ADMIN MENU     """
 
-
+@log_decorator
 def super_admin_menu():
     print("""
         1. Admins
@@ -116,7 +116,7 @@ def user_settings(user_type):
 
 """     ADMIN MENU     """
 
-
+@log_decorator
 def admin_menu(id):
     print("""
         1. Groups
@@ -140,7 +140,7 @@ def admin_menu(id):
         print("Wrong choice !")
         admin_menu(id)
 
-
+@log_decorator
 def group_settings(id):
     print("""
     1. Create group
@@ -178,7 +178,7 @@ def group_settings(id):
         print("Wrong choice!")
         group_settings(id)
 
-
+@log_decorator
 def student_settings(id):
     print("""
     1. Create student
@@ -233,7 +233,7 @@ def student_settings(id):
 
 """     TEACHER MENU    """
 
-
+@log_decorator
 def teacher_menu(id):
     print("""
     1. Show my groups
@@ -271,7 +271,7 @@ def teacher_menu(id):
 
 """     STUDENT MENU    """
 
-
+@log_decorator
 def student_menu(id):
     print("""
     1. Show my groups

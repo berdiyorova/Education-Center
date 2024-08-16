@@ -2,6 +2,7 @@ import smtplib
 import threading
 from contextlib import contextmanager
 
+from logs import log_decorator
 from users.user import filter_users, print_enumerate, delete_user, update_user, UserTypes
 
 
@@ -15,6 +16,7 @@ def show_menu(user_type):
     """
 
 
+@log_decorator
 def delete(key, value):
     users = filter_users(key, value)
     print_enumerate(users)
@@ -22,6 +24,7 @@ def delete(key, value):
     return delete_user(users[choice - 1]['id'])
 
 
+@log_decorator
 def update(key, value):
     users = filter_users(key, value)
     print_enumerate(users)
@@ -64,6 +67,7 @@ def email_to_users():
             print("Invalid input! Try again.")
 
 
+@log_decorator
 def send_message():
     users = email_to_users()
     subject = input("Subject: ")

@@ -149,6 +149,7 @@ def get_user(id):
     return None
 
 
+@log_decorator
 def delete_user(id):
     """
         delete user from users by id
@@ -161,6 +162,7 @@ def delete_user(id):
     return None
 
 
+@log_decorator
 def update_user(id):
     """
         update user from users by id
@@ -200,6 +202,7 @@ def confirm_password(password):
     return password == confirm_pass
 
 
+@log_decorator
 def change_password():
     while True:
         new_value = input(f"Enter new value for password:  ")
